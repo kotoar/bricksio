@@ -1,0 +1,14 @@
+{
+  "gameTitle": "test Level",
+  "initBoardData": [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+  "controlLines": [
+    {
+      "direction": 0,
+      "lineIndex": 2,
+      "start": 1,
+      "end": 3
+    }
+  ],
+  "width": 4,
+  "height": 4
+}
