@@ -97,6 +97,10 @@ export function GameBoard() {
             const rerender = innerController.touchEventMethod(canvas, event);
             if(rerender) resize();
         });
+        window.addEventListener('touchmove', (event): void => {
+            event.preventDefault();
+        }, {passive: false});
+
     }, []);
 
     return (
