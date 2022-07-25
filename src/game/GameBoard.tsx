@@ -136,7 +136,7 @@ export function GameBoard() {
                     </p>
                 </div>
                 <div>
-                    made by @<u>kotoar</u>
+                    made by @<a href={'https://github.com/kotoar'} target={'_blank'} rel="noreferrer">kotoar</a>
                 </div>
             </div>
         </div>
