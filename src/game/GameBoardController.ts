@@ -1,3 +1,5 @@
+import {fillRoundedRect} from "../Utils";
+
 export enum ControlLineDirection {
     Vertical,
     Horizontal
@@ -301,11 +303,11 @@ export class GameBoardController {
     private drawBackground(context: CanvasRenderingContext2D) {
         const unit = this.getDrawingUnit(context);
         context.fillStyle = 'blanchedAlmond';
-        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+        fillRoundedRect(context, 0, 0, context.canvas.width, context.canvas.height, unit.sizeUnit);
         context.fillStyle = 'gainsboro';
         for(let y=0;y<this.heightCrt;y++) {
             for(let x=0;x<this.widthCrt;x++) {
-                context.fillRect(unit.getLenStart(x), unit.getLenStart(y), unit.sizeBlock, unit.sizeBlock);
+                fillRoundedRect(context, unit.getLenStart(x), unit.getLenStart(y), unit.sizeBlock, unit.sizeBlock, unit.sizeUnit / 3);
             }
         }
     }
@@ -332,10 +334,11 @@ export class GameBoardController {
             const x = index % this.widthCrt;
             const y = Math.floor(index / this.widthCrt);
             context.fillStyle = brick.style;
-            context.fillRect(unit.getLenStart(x), unit.getLenStart(y), unit.sizeBlock, unit.sizeBlock);
+            fillRoundedRect(context, unit.getLenStart(x), unit.getLenStart(y), unit.sizeBlock, unit.sizeBlock, unit.sizeUnit / 3);
             context.fillStyle = 'black';
             context.font = "30px Arial";
             context.textAlign = 'center';
+            context.textBaseline = 'middle';
             context.fillText(String(brick.value), unit.getLenStart(x) + 0.5 * unit.sizeBlock, unit.getLenStart(y) + 0.5 * unit.sizeBlock);
         });
     }

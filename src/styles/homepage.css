@@ -1,5 +1,10 @@
-.main-container {
+.web-container {
     margin: 0 auto;
+}
+
+.main-container {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .title-line {
@@ -9,13 +14,13 @@
 
 .main-title {
     float: left;
-    margin: 0;
+    margin: 0 0 0 5px;
 }
 
 .score-text {
     float: right;
     font-weight: bold;
-    margin: 15px 0 0;
+    margin: 15px 5px 0 0;
 }
 
 .how-to-play-block {

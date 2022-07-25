@@ -18,6 +18,7 @@ export function GameBoard() {
             let length = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth;
             if (length > 600) length = 600;
             setPageWidth(length);
+            length -= 40;
             canvas.style.width = String(length) + 'px';
             canvas.style.height = String(length) + 'px';
             canvas.width = canvas.offsetWidth;
@@ -110,28 +111,33 @@ export function GameBoard() {
             if(refresh) resize();
             setScore(score);
         });
-        window.addEventListener('touchmove', (event): void => {
+        canvas?.addEventListener('touchmove', (event): void => {
             event.preventDefault();
         }, {passive: false});
 
     }, []);
 
     return (
-        <div style={{width: pageWidth}} className={'main-container'}>
-            <div className={'title-line'}>
-                <h1 className={'main-title'}>Rubik's Bricks</h1>
-                <span className={'score-text'}>score: {score}</span>
-            </div>
-            <canvas ref={canvasRef} style={{marginTop: 50, marginBottom: 50}}/>
-            <div className={'how-to-play-block'}>
-                <p>
-                    <strong>How to play:</strong>
-                    <br/>
-                    Drag each <strong>Control Line</strong> to move and merge bricks.
-                    Bricks with same number and type will merge into one.
-                    <br/>
-                    Get higher score by merging more bricks!
-                </p>
+        <div style={{width: pageWidth}} className={'web-container'}>
+            <div className={'main-container'}>
+                <div className={'title-line'}>
+                    <h1 className={'main-title'}>Rubik's Bricks</h1>
+                    <span className={'score-text'}>score: {score}</span>
+                </div>
+                <canvas ref={canvasRef} style={{marginTop: 50, marginBottom: 50}}/>
+                <div className={'how-to-play-block'}>
+                    <p>
+                        <strong>How to play:</strong>
+                        <br/>
+                        Drag each <strong>Control Line</strong> to move and merge bricks.
+                        Bricks with same number and type will merge into one.
+                        <br/>
+                        Get higher score by merging more bricks!
+                    </p>
+                </div>
+                <div>
+                    made by @<u>kotoar</u>
+                </div>
             </div>
         </div>
     );
