@@ -1,0 +1,29 @@
+.main-container {
+    margin: 0 auto;
+}
+
+.title-line {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.main-title {
+    float: left;
+    margin: 0;
+}
+
+.score-text {
+    float: right;
+    font-weight: bold;
+    margin: 15px 0 0;
+}
+
+.how-to-play-block {
+    float: left;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.document-background-color {
+    background-color: oldlace;
+}

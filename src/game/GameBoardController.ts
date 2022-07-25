@@ -78,6 +78,9 @@ export class GameBoardController {
     step: number = 0;
     stepMax: number = 2;
 
+    gameEnd: boolean = false;
+    score: number;
+
     private getBrick(x: number, y: number): Brick | undefined {
         return this.bricks[y * this.widthCrt + x];
     }
@@ -113,6 +116,7 @@ export class GameBoardController {
             x: 0,
             y: 0
         }
+        this.score = 0;
         this.generateNewBrick();
         this.generateNewBrick();
     }
@@ -135,6 +139,7 @@ export class GameBoardController {
                     const lastBrick = areaBricks[areaBricks.length-1];
                     if(newBrick.value === lastBrick.value && newBrick.type === lastBrick.type) {
                         areaBricks[areaBricks.length-1].value *= 2;
+                        this.score += areaBricks[areaBricks.length-1].value;
                         directlyPush = true;
                     }
                     else areaBricks.push(newBrick);
@@ -166,6 +171,7 @@ export class GameBoardController {
                     const lastBrick = areaBricks[areaBricks.length-1];
                     if(newBrick.value === lastBrick.value && newBrick.type === lastBrick.type) {
                         areaBricks[areaBricks.length-1].value *= 2;
+                        this.score += areaBricks[areaBricks.length-1].value;
                         directlyPush = true;
                     }
                     else areaBricks.push(newBrick);
@@ -197,6 +203,7 @@ export class GameBoardController {
                     const lastBrick = areaBricks[areaBricks.length-1];
                     if(newBrick.value === lastBrick.value && newBrick.type === lastBrick.type) {
                         areaBricks[areaBricks.length-1].value *= 2;
+                        this.score += areaBricks[areaBricks.length-1].value;
                         directlyPush = true;
                     }
                     else areaBricks.push(newBrick);
@@ -228,6 +235,7 @@ export class GameBoardController {
                     const lastBrick = areaBricks[areaBricks.length-1];
                     if(newBrick.value === lastBrick.value && newBrick.type === lastBrick.type) {
                         areaBricks[areaBricks.length-1].value *= 2;
+                        this.score += areaBricks[areaBricks.length-1].value;
                         directlyPush = true;
                     }
                     else areaBricks.push(newBrick);
@@ -271,15 +279,28 @@ export class GameBoardController {
     }
 
     private isEnd(): boolean {
-        for(let brick in this.bricks) {
-            if(brick === undefined) return false;
+        for(let y=0;y<this.heightCrt;y++) {
+            for(let x=0;x<this.widthCrt-1;x++) {
+                const brickA = this.getBrick(x, y);
+                const brickB = this.getBrick(x+1, y);
+                if(brickA === undefined || brickB === undefined) return false;
+                if(brickA.type === brickB.type && brickA.value === brickB.value) return false;
+            }
+        }
+        for(let x=0;x<this.widthCrt;x++) {
+            for(let y=0;y<this.heightCrt-1;y++) {
+                const brickA = this.getBrick(x, y);
+                const brickB = this.getBrick(x, y+1);
+                if(brickA === undefined || brickB === undefined) return false;
+                if(brickA.type === brickB.type && brickA.value === brickB.value) return false;
+            }
         }
         return true;
     }
 
     private drawBackground(context: CanvasRenderingContext2D) {
         const unit = this.getDrawingUnit(context);
-        context.fillStyle = 'oldlace';
+        context.fillStyle = 'blanchedAlmond';
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
         context.fillStyle = 'gainsboro';
         for(let y=0;y<this.heightCrt;y++) {
@@ -319,20 +340,31 @@ export class GameBoardController {
         });
     }
 
+    private drawEndGameScreen(context: CanvasRenderingContext2D) {
+        const areaSize = context.canvas.width;
+        context.fillStyle = 'blanchedAlmond';
+        context.fillRect(0, areaSize / 3, context.canvas.width, areaSize / 3);
+        context.font = "30px Arial";
+        context.fillStyle = 'black';
+        context.textAlign = 'center';
+        context.fillText('Game End', areaSize / 2, areaSize / 2 - 10);
+        context.font = "20px Arial";
+        context.fillText('score ' + this.score, areaSize / 2, areaSize / 2 + 10);
+    }
+
     drawMethod() {
         return (context: CanvasRenderingContext2D) => {
             this.drawBackground(context);
             this.drawBricks(context);
             this.drawControlLines(context);
-            console.log(this.bricks);
+            if(this.gameEnd) this.drawEndGameScreen(context);
         }
     }
 
     private handleMouseMovement(x1: number, y1: number, x2: number, y2: number, sizeUnit: number): boolean {
-        console.log('start han');
         if (Math.abs(x1 - x2) < sizeUnit && Math.abs(y1 - y2) < sizeUnit) return false;
         const moveDir: ControlLineDirection = Math.abs(x1 - x2) > Math.abs(y1 - y2)? ControlLineDirection.Horizontal : ControlLineDirection.Vertical;
-        let moveDirection: ControlLineMove = ControlLineMove.HorizontalLeft;
+        let moveDirection: ControlLineMove;
         if(moveDir === ControlLineDirection.Horizontal) {
             if(x2 > x1) moveDirection = ControlLineMove.HorizontalRight;
             else moveDirection = ControlLineMove.HorizontalLeft;
@@ -361,43 +393,47 @@ export class GameBoardController {
             this.step = 0;
         }
         if(this.isEnd()) {
-            console.log('Game End');
+            this.gameEnd = true;
         }
         return true;
     }
 
-    mouseEventMethod(canvas: HTMLCanvasElement, event: MouseEvent): boolean {
+    mouseEventMethod(canvas: HTMLCanvasElement, event: MouseEvent): {refresh: boolean, score: number} {
         const areaSize = canvas.width;
         const sizeUnit  = areaSize  / (this.widthCrt * this.drawingParams.blockGapRatio  + (this.widthCrt + 1)   + 2 * this.drawingParams.paddingGapRatio);
         const rect = canvas.getBoundingClientRect();
         const x = event.x - rect.x;
         const y = event.y - rect.y;
+        let refresh = false;
         if (event.type === 'mousedown') {
             this.mouseState.pressed = true;
             this.mouseState.x = x;
             this.mouseState.y = y;
         }
         else if (event.type === 'mouseup') {
-            return this.handleMouseMovement(this.mouseState.x, this.mouseState.y, x, y, sizeUnit);
+            refresh = this.handleMouseMovement(this.mouseState.x, this.mouseState.y, x, y, sizeUnit);
         }
-        return false;
+        const score = this.score;
+        return {refresh, score};
     }
 
-    touchEventMethod(canvas: HTMLCanvasElement, event: TouchEvent): boolean {
+    touchEventMethod(canvas: HTMLCanvasElement, event: TouchEvent): {refresh: boolean, score: number} {
         const areaSize = canvas.width;
         const sizeUnit  = areaSize  / (this.widthCrt * this.drawingParams.blockGapRatio  + (this.widthCrt + 1)   + 2 * this.drawingParams.paddingGapRatio);
         const rect = canvas.getBoundingClientRect();
         const x = event.changedTouches[0].clientX - rect.x;
         const y = event.changedTouches[0].clientY - rect.y;
+        let refresh = false;
         if (event.type === 'touchstart') {
             this.mouseState.pressed = true;
             this.mouseState.x = x;
             this.mouseState.y = y;
         }
         else if (event.type === 'touchend') {
-            return this.handleMouseMovement(this.mouseState.x, this.mouseState.y, x, y, sizeUnit);
+            refresh = this.handleMouseMovement(this.mouseState.x, this.mouseState.y, x, y, sizeUnit);
         }
-        return false;
+        const score = this.score;
+        return {refresh, score};
     }
 
 }
